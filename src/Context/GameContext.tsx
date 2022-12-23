@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect } from "react";
+import { ReactNode, useCallback } from "react";
 import { createContext, useContext } from "react";
 
 import { useStopwatch } from "react-timer-hook";

@@ -1,4 +1,4 @@
-import type { MouseEventHandler } from "react";
+import { MouseEventHandler, useEffect } from "react";
 
 import Box from "@mui/material/Box";
 import ImageList from "@mui/material/ImageList";
@@ -6,13 +6,20 @@ import ImageListItem from "@mui/material/ImageListItem";
 import ImageListItemBar from "@mui/material/ImageListItemBar";
 import Typography from "@mui/material/Typography";
 
+import { useGameCtx } from "../../Context/GameContext";
+
 import Timer from "../../components/Timer/Timer";
 
 export default function Game() {
+    const { startGame } = useGameCtx();
     const handleClick: MouseEventHandler<HTMLImageElement> = (e) => {
         console.log(e.nativeEvent.offsetX);
         console.log(e.nativeEvent.offsetY);
     };
+
+    useEffect(() => {
+        startGame();
+    }, []);
 
     return (
         <Box>
