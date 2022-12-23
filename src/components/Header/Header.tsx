@@ -52,13 +52,11 @@ export default function Header() {
             id: 1,
             title: "Leader Board",
             link: "/",
-            visible: true,
         },
         {
             id: 2,
             title: "Start Game",
             link: "/game",
-            visible: !!isAuth,
         },
     ];
 
@@ -116,27 +114,20 @@ export default function Header() {
                         Find Us Game
                     </Typography>
                     <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
-                        {NAV_ITEMS.map(
-                            ({ id, title, link, visible }) =>
-                                visible && (
-                                    <Button
-                                        key={id}
-                                        color={
-                                            pathname === link
-                                                ? "success"
-                                                : "secondary"
-                                        }
-                                        variant={
-                                            pathname === link
-                                                ? "contained"
-                                                : "outlined"
-                                        }
-                                        onClick={(e) => handleNavigation(link)}
-                                    >
-                                        {title}
-                                    </Button>
-                                ),
-                        )}
+                        {NAV_ITEMS.map(({ id, title, link }) => (
+                            <Button
+                                key={id}
+                                color={
+                                    pathname === link ? "success" : "secondary"
+                                }
+                                variant={
+                                    pathname === link ? "contained" : "outlined"
+                                }
+                                onClick={(e) => handleNavigation(link)}
+                            >
+                                {title}
+                            </Button>
+                        ))}
                         {signInSignOutButton}
                     </Box>
                 </Toolbar>
