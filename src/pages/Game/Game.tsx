@@ -1,5 +1,7 @@
 import { MouseEventHandler } from "react";
 
+import Box from "@mui/material/Box";
+
 export default function Game() {
     const handleClick: MouseEventHandler<HTMLImageElement> = (e) => {
         console.log(e.nativeEvent.offsetX);
@@ -7,13 +9,21 @@ export default function Game() {
     };
 
     return (
-        <>
-            <h1>Game</h1>
-            <img
-                src={require("../../Assets/smaple.jpg")}
-                alt=""
-                onClick={handleClick}
-            />
-        </>
+        <Box>
+            {/* TODO: ADD Game Header */}
+            <Box
+                sx={{
+                    "& > img": {
+                        width: "100%",
+                    },
+                }}
+            >
+                <img
+                    src={require("../../Assets/smaple.jpg")}
+                    alt=""
+                    onClick={handleClick}
+                />
+            </Box>
+        </Box>
     );
 }

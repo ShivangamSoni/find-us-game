@@ -1,10 +1,12 @@
-import { Link } from "react-router-dom";
+import { Table, Typography } from "@mui/material";
 
 export default function Home() {
     return (
         <>
-            <h1>Home</h1>
-            <Link to="/game">Start</Link>
+            <Typography component="h2" variant="h4">
+                Leader Board
+            </Typography>
+            {/* TODO: Render Leader Board Table */}
         </>
     );
 }
