@@ -11,6 +11,8 @@ import "@fontsource/roboto/700.css";
 
 import CssBaseline from "@mui/material/CssBaseline";
 
+import AuthProvider from "./Context/AuthContext";
+
 import App from "./App";
 
 const root = ReactDOM.createRoot(
@@ -20,7 +22,9 @@ root.render(
     <React.StrictMode>
         <CssBaseline />
         <BrowserRouter>
-            <App />
+            <AuthProvider>
+                <App />
+            </AuthProvider>
         </BrowserRouter>
     </React.StrictMode>,
 );

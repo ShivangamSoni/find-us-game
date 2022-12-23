@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+// Auth
+import { auth, googleAuthProvider } from "../../firebase";
+import { signInWithPopup, signOut } from "firebase/auth";
+import { useAuthCtx } from "../../Context/AuthContext";
+
+// MUI
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -17,12 +23,10 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import GoogleIcon from "@mui/icons-material/Google";
 
-import { auth, googleAuthProvider } from "../../firebase";
-import { signInWithPopup } from "firebase/auth";
-
 export default function Header() {
     const { pathname } = useLocation();
     const navigate = useNavigate();
+    const { isAuth } = useAuthCtx();
 
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -35,22 +39,54 @@ export default function Header() {
             console.log(error);
         }
     };
+    const handleSignOut = async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const NAV_ITEMS = [
+        {
+            id: 1,
+            title: "Leader Board",
+            link: "/",
+            visible: true,
+        },
+        {
+            id: 2,
+            title: "Start Game",
+            link: "/game",
+            visible: !!isAuth,
+        },
+    ];
 
     const drawerContainer =
         window !== undefined ? () => window.document.body : undefined;
 
-    const signInButton = (
-        <Button
-            variant="contained"
-            sx={{
-                gap: 1,
-                display: "flex",
-            }}
-            onClick={handleSignIn}
-        >
-            <GoogleIcon />
-            <Typography variant="button">Sign in with Google</Typography>
-        </Button>
+    const signInSignOutButton = (
+        <>
+            {!!isAuth ? (
+                <Button variant="contained" onClick={handleSignOut}>
+                    <Typography variant="button">Sign out</Typography>
+                </Button>
+            ) : (
+                <Button
+                    variant="contained"
+                    sx={{
+                        gap: 1,
+                        display: "flex",
+                    }}
+                    onClick={handleSignIn}
+                >
+                    <GoogleIcon />
+                    <Typography variant="button">
+                        Sign in with Google
+                    </Typography>
+                </Button>
+            )}
+        </>
     );
 
     return (
@@ -62,7 +98,7 @@ export default function Header() {
                         aria-label="open navigation drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: "none" } }}
+                        sx={{ mr: 2, display: { md: "none" } }}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -79,22 +115,29 @@ export default function Header() {
                     >
                         Find Us Game
                     </Typography>
-                    <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 1 }}>
-                        {NAV_ITEMS.map(({ id, title, link }) => (
-                            <Button
-                                key={id}
-                                color={
-                                    pathname === link ? "success" : "secondary"
-                                }
-                                variant={
-                                    pathname === link ? "contained" : "outlined"
-                                }
-                                onClick={(e) => handleNavigation(link)}
-                            >
-                                {title}
-                            </Button>
-                        ))}
-                        {signInButton}
+                    <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
+                        {NAV_ITEMS.map(
+                            ({ id, title, link, visible }) =>
+                                visible && (
+                                    <Button
+                                        key={id}
+                                        color={
+                                            pathname === link
+                                                ? "success"
+                                                : "secondary"
+                                        }
+                                        variant={
+                                            pathname === link
+                                                ? "contained"
+                                                : "outlined"
+                                        }
+                                        onClick={(e) => handleNavigation(link)}
+                                    >
+                                        {title}
+                                    </Button>
+                                ),
+                        )}
+                        {signInSignOutButton}
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -109,7 +152,7 @@ export default function Header() {
                         keepMounted: true,
                     }}
                     sx={{
-                        "display": { xs: "block", sm: "none" },
+                        "display": { xs: "block", md: "none" },
                         "& .MuiDrawer-paper": {
                             boxSizing: "border-box",
                             width: DRAWER_WIDTH,
@@ -136,7 +179,17 @@ export default function Header() {
                                     </ListItemButton>
                                 </ListItem>
                             ))}
-                            <ListItem>{signInButton}</ListItem>
+                            <ListItem disablePadding>
+                                <ListItemButton
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "stretch",
+                                    }}
+                                >
+                                    {signInSignOutButton}
+                                </ListItemButton>
+                            </ListItem>
                         </List>
                     </Box>
                 </Drawer>
@@ -144,20 +197,5 @@ export default function Header() {
         </Box>
     );
 }
-
-const NAV_ITEMS = [
-    {
-        id: 1,
-        title: "Leader Board",
-        link: "/",
-        visible: true,
-    },
-    {
-        id: 2,
-        title: "Start Game",
-        link: "/game",
-        visible: false,
-    },
-];
 
 const DRAWER_WIDTH = 240;
