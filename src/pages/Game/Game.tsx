@@ -1,4 +1,4 @@
-import { MouseEventHandler, useEffect } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
 import ImageList from "@mui/material/ImageList";
@@ -10,16 +10,21 @@ import { useGameCtx } from "../../Context/GameContext";
 
 import Timer from "../../components/Timer/Timer";
 
+// Static Data [TODO: Get Data from Firestore]
+import levelData from "../../StaticData/level";
+
 export default function Game() {
     const { startGame } = useGameCtx();
-    const handleClick: MouseEventHandler<HTMLImageElement> = (e) => {
-        console.log(e.nativeEvent.offsetX);
-        console.log(e.nativeEvent.offsetY);
-    };
+    const [level, setLevel] = useState<Game.GameBoard>(levelData);
 
     useEffect(() => {
         startGame();
     }, []);
+
+    const handleClick: MouseEventHandler<HTMLImageElement> = (e) => {
+        console.log(e.nativeEvent.offsetX);
+        console.log(e.nativeEvent.offsetY);
+    };
 
     return (
         <Box>
@@ -52,7 +57,7 @@ export default function Game() {
                             },
                         }}
                     >
-                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                        {level.characters.map(({ name, url, found }) => (
                             <ImageListItem
                                 sx={{
                                     "height": "inherit !important",
@@ -62,14 +67,10 @@ export default function Game() {
                                     },
                                 }}
                             >
-                                <img
-                                    src={require("../../Assets/smaple.jpg")}
-                                    alt=""
-                                    loading="lazy"
-                                />
+                                <img src={url} alt={name} loading="lazy" />
                                 <ImageListItemBar
-                                    title="Mario"
-                                    subtitle="Not Found"
+                                    title={name}
+                                    subtitle={found ? "Found" : "Not Found"}
                                     position="bottom"
                                 />
                             </ImageListItem>
@@ -89,11 +90,7 @@ export default function Game() {
                     },
                 }}
             >
-                <img
-                    src={require("../../Assets/smaple.jpg")}
-                    alt=""
-                    onClick={handleClick}
-                />
+                <img src={level.url} alt="" onClick={handleClick} />
             </Box>
         </Box>
     );

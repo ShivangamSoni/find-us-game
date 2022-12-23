@@ -1,4 +1,4 @@
-import n64Board from "./assets/boards/n64.jpg";
+import n64Board from "../assets/boards/n64.jpg";
 
 import luigi from "../assets/characters/luigi.png";
 import conker from "../assets/characters/conker.png";
