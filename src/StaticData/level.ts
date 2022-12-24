@@ -11,22 +11,28 @@ const levelData: Game.GameBoard = {
         {
             name: "Luigi",
             found: false,
-            coordX: "76",
-            coordY: "48",
+            loc: {
+                coordX: 76,
+                coordY: 48,
+            },
             url: luigi,
         },
         {
             name: "Conker",
             found: false,
-            coordX: "39",
-            coordY: "58",
+            loc: {
+                coordX: 39,
+                coordY: 58,
+            },
             url: conker,
         },
         {
             name: "Bobomb",
             found: false,
-            coordX: "74",
-            coordY: "60",
+            loc: {
+                coordX: 74,
+                coordY: 60,
+            },
             url: bobomb,
         },
     ],

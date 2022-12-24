@@ -28,19 +28,20 @@ interface Props {
 }
 
 export default function GameProvider({ children }: Props) {
-    const { seconds, minutes, start, reset } = useStopwatch({
+    const { seconds, minutes, start, pause, reset } = useStopwatch({
         autoStart: false,
     });
 
     const time = { seconds, minutes };
 
     const startGame = useCallback(() => {
+        reset();
         start();
-    }, [start]);
+    }, [start, reset]);
 
     const endGame = useCallback(() => {
-        reset();
-    }, [reset]);
+        pause();
+    }, [pause]);
 
     return (
         <GameContext.Provider value={{ time, startGame, endGame }}>

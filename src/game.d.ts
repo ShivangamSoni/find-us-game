@@ -1,10 +1,13 @@
 declare namespace Game {
+    interface Coordinates {
+        coordX: number;
+        coordY: number;
+    }
     interface Character {
-        coordX: string;
-        coordY: string;
         found: boolean;
         name: string;
         url: string;
+        loc: Coordinates;
     }
 
     interface GameBoard {
