@@ -1,34 +1,29 @@
 import { MouseEventHandler, useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
-import ImageList from "@mui/material/ImageList";
-import ImageListItem from "@mui/material/ImageListItem";
-import ImageListItemBar from "@mui/material/ImageListItemBar";
-import Typography from "@mui/material/Typography";
 import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
 
-import QuestionMark from "@mui/icons-material/QuestionMark";
-import Done from "@mui/icons-material/Done";
-
-import { useGameCtx } from "../../Context/GameContext";
-
-import Timer from "../../components/Timer/Timer";
+import { useSnackbar } from "notistack";
 
 // Static Data [TODO: Get Data from Firestore]
 import levelData from "../../StaticData/level";
+
+import { useTimer } from "../../hooks/useTimer";
 import { getCoordinates, verifyLocation } from "../../utils/game";
 
+import CharacterList from "../../components/CharacterList/CharacterList";
+import Timer from "../../components/Timer/Timer";
 import SelectionMenu from "../../components/SelectionMenu/SelectionMenu";
-import { DialogTitle, IconButton } from "@mui/material";
-import { useSnackbar } from "notistack";
 
 export default function Game() {
     const { enqueueSnackbar } = useSnackbar();
     const {
-        time: { seconds, minutes },
-        startGame,
-        endGame,
-    } = useGameCtx();
+        time: { minutes, seconds },
+        startTimer,
+        pauseTimer,
+    } = useTimer();
+
     const [level, setLevel] = useState<Game.GameBoard>(levelData);
     const [selectedLocation, setSelectedLocation] = useState<Game.Coordinates>({
         coordX: 0,
@@ -38,7 +33,7 @@ export default function Game() {
     const [dialogPosition, setDialogPosition] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
-        startGame();
+        startTimer();
     }, []);
 
     useEffect(() => {
@@ -46,7 +41,7 @@ export default function Game() {
 
         if (allFound) {
             const timeTaken = `${minutes} : ${seconds}`;
-            endGame();
+            pauseTimer();
 
             console.log(timeTaken);
         }
@@ -121,64 +116,15 @@ export default function Game() {
                         xs: "column",
                         sm: "row",
                     },
-                    gap: 2,
+                    gap: 1,
+                    mb: 1,
                 }}
             >
                 <Box sx={{ width: "100%" }}>
-                    <Typography variant="h5" component="h2">
-                        Find These Characters
-                    </Typography>
-                    <ImageList
-                        sx={{
-                            height: 200,
-                            gridTemplateColumns: {
-                                xs: "repeat(2, 1fr) !important",
-                                sm: "repeat(3, 1fr) !important",
-                                md: "repeat(4, 1fr) !important",
-                            },
-                        }}
-                    >
-                        {level.characters.map(({ name, url, found }) => (
-                            <ImageListItem
-                                key={name}
-                                sx={{
-                                    "height": "inherit !important",
-                                    "& > img": {
-                                        objectFit: "contain !important",
-                                        height: "100% !important",
-                                    },
-                                }}
-                            >
-                                <img src={url} alt={name} loading="lazy" />
-                                <ImageListItemBar
-                                    title={name}
-                                    subtitle={found ? "Found" : "Not Found"}
-                                    position="bottom"
-                                    actionIcon={
-                                        <IconButton
-                                            size="small"
-                                            color={found ? "success" : "error"}
-                                            sx={{
-                                                backgroundColor: "white",
-                                                mr: 1,
-                                            }}
-                                            disableRipple
-                                        >
-                                            {found ? (
-                                                <Done fontSize="small" />
-                                            ) : (
-                                                <QuestionMark fontSize="small" />
-                                            )}
-                                        </IconButton>
-                                    }
-                                />
-                            </ImageListItem>
-                        ))}
-                    </ImageList>
+                    <CharacterList characters={level.characters} />
                 </Box>
-
                 <Box>
-                    <Timer />
+                    <Timer minutes={minutes} seconds={seconds} />
                 </Box>
             </Box>
 

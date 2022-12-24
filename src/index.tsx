@@ -12,7 +12,6 @@ import "@fontsource/roboto/700.css";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import AuthProvider from "./Context/AuthContext";
-import GameProvider from "./Context/GameContext";
 
 import App from "./App";
 
@@ -24,9 +23,7 @@ root.render(
         <CssBaseline />
         <BrowserRouter>
             <AuthProvider>
-                <GameProvider>
-                    <App />
-                </GameProvider>
+                <App />
             </AuthProvider>
         </BrowserRouter>
     </React.StrictMode>,

@@ -2,8 +2,6 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { keyframes } from "@mui/material/styles";
 
-import { useGameCtx } from "../../Context/GameContext";
-
 const clockTileStyle = {
     display: "grid",
     placeItems: "center",
@@ -26,11 +24,12 @@ const clockColonStyle = {
     animation: `${blink} 1000ms infinite linear`,
 };
 
-export default function Timer() {
-    const {
-        time: { seconds, minutes },
-    } = useGameCtx();
+interface Props {
+    minutes: number;
+    seconds: number;
+}
 
+export default function Timer({ minutes, seconds }: Props) {
     return (
         <Box
             sx={{
@@ -41,7 +40,7 @@ export default function Timer() {
         >
             <Box sx={clockTileStyle}>
                 <Typography component="span" variant="h3">
-                    {minutes}
+                    {minutes.toString().padStart(2, "0")}
                 </Typography>
                 <Typography component="span" variant="subtitle2">
                     Minutes
@@ -54,7 +53,7 @@ export default function Timer() {
             </Box>
             <Box sx={clockTileStyle}>
                 <Typography component="span" variant="h3">
-                    {seconds}
+                    {seconds.toString().padStart(2, "0")}
                 </Typography>
                 <Typography component="span" variant="subtitle2">
                     Seconds
