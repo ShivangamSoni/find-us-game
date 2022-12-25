@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-// Auth
-import { auth, googleAuthProvider } from "../../firebase";
-import { signInWithPopup, signOut } from "firebase/auth";
-import { useAuthCtx } from "../../Context/AuthContext";
-
 // MUI
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
@@ -21,31 +16,15 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 
 import MenuIcon from "@mui/icons-material/Menu";
-import GoogleIcon from "@mui/icons-material/Google";
 
 export default function Header() {
     const { pathname } = useLocation();
     const navigate = useNavigate();
-    const { isAuth } = useAuthCtx();
 
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const handleDrawerToggle = () => setIsMobileOpen((prev) => !prev);
     const handleNavigation = (link: string) => navigate(link);
-    const handleSignIn = async () => {
-        try {
-            await signInWithPopup(auth, googleAuthProvider);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    const handleSignOut = async () => {
-        try {
-            await signOut(auth);
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     const NAV_ITEMS = [
         {
@@ -62,30 +41,6 @@ export default function Header() {
 
     const drawerContainer =
         window !== undefined ? () => window.document.body : undefined;
-
-    const signInSignOutButton = (
-        <>
-            {!!isAuth ? (
-                <Button variant="contained" onClick={handleSignOut}>
-                    <Typography variant="button">Sign out</Typography>
-                </Button>
-            ) : (
-                <Button
-                    variant="contained"
-                    sx={{
-                        gap: 1,
-                        display: "flex",
-                    }}
-                    onClick={handleSignIn}
-                >
-                    <GoogleIcon />
-                    <Typography variant="button">
-                        Sign in with Google
-                    </Typography>
-                </Button>
-            )}
-        </>
-    );
 
     return (
         <Box sx={{ display: "flex" }} component="header">
@@ -128,7 +83,6 @@ export default function Header() {
                                 {title}
                             </Button>
                         ))}
-                        {signInSignOutButton}
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -177,9 +131,7 @@ export default function Header() {
                                         flexDirection: "column",
                                         alignItems: "stretch",
                                     }}
-                                >
-                                    {signInSignOutButton}
-                                </ListItemButton>
+                                ></ListItemButton>
                             </ListItem>
                         </List>
                     </Box>

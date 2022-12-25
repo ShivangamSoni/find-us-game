@@ -5,27 +5,25 @@ import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 
-const AuthContext = createContext<{ isAuth: User | null }>({ isAuth: null });
+const AuthContext = createContext<{ user: User | null }>({ user: null });
 
 interface Props {
     children: ReactNode;
 }
 
 export default function AuthProvider({ children }: Props) {
-    const [isAuth, setIsAuth] = useState<User | null>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setIsAuth(user);
+            setUser(user);
         });
 
         return () => unsubscribe();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuth }}>
-            {children}
-        </AuthContext.Provider>
+        <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
     );
 }
 

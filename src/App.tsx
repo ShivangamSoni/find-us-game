@@ -1,16 +1,36 @@
+import { useEffect } from "react";
 import { Route, Routes } from "react-router";
+
+// Auth
+import { signInAnonymously } from "firebase/auth";
+import { auth } from "./firebase";
+import { useAuthCtx } from "./Context/AuthContext";
 
 import { SnackbarProvider } from "notistack";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
 
-import WithAuth from "./components/WithAuth/WithAuth";
 import Header from "./components/Header/Header";
 import Home from "./pages/Home/Home";
 import Game from "./pages/Game/Game";
 
 export default function App() {
+    const { user } = useAuthCtx();
+    useEffect(() => {
+        (async () => {
+            try {
+                await signInAnonymously(auth);
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+
+        return () => {
+            user?.delete().then();
+        };
+    }, [user]);
+
     return (
         <SnackbarProvider
             maxSnack={3}
@@ -23,14 +43,7 @@ export default function App() {
                     <Toolbar variant="dense" />
                     <Routes>
                         <Route path="/" element={<Home />} />
-                        <Route
-                            path="/game"
-                            element={
-                                <WithAuth>
-                                    <Game />
-                                </WithAuth>
-                            }
-                        />
+                        <Route path="/game" element={<Game />} />
                     </Routes>
                 </Box>
             </Container>
