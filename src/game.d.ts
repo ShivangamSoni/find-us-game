@@ -18,7 +18,6 @@ declare namespace Game {
         characters: Character[];
     }
     interface RawCharacter {
-        found: boolean;
         name: string;
         url: string;
         coordX: number;
