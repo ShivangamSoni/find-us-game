@@ -3,6 +3,8 @@ import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import Filter from "bad-words";
+
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
@@ -12,6 +14,9 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
 import { getFormattedTime } from "../../utils/getFormattedTime";
+
+// Bad Word Filter
+const filter = new Filter();
 
 // Form Schema
 const FormSchema = z.object({
@@ -47,7 +52,7 @@ export default function PlayerForm({
     });
 
     const handleSubmit: SubmitHandler<FormSchemaType> = (data) => {
-        const username = data.username;
+        const username = filter.clean(data.username).replaceAll("*", "").trim();
         localStorage.setItem("player-name", username);
         onSubmit(username);
     };
