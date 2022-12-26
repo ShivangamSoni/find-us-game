@@ -1,14 +1,19 @@
 import { MouseEventHandler, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Firebase Configs
 import { db, storage } from "../../firebase";
 // Firestore
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import {
+    doc,
+    getDoc,
+    collection,
+    getDocs,
+    addDoc,
+    serverTimestamp,
+} from "firebase/firestore";
 // Firebase Storage
 import { ref, getDownloadURL } from "firebase/storage";
-
-import { useTimer } from "../../hooks/useTimer";
-import { getCoordinates, verifyLocation } from "../../utils/game";
 
 import { useSnackbar } from "notistack";
 
@@ -16,11 +21,17 @@ import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 
+import { useTimer } from "../../hooks/useTimer";
+import { getCoordinates, verifyLocation } from "../../utils/game";
+import { getFormattedTime } from "../../utils/getFormattedTime";
+
 import CharacterList from "../../components/CharacterList/CharacterList";
 import Timer from "../../components/Timer/Timer";
 import SelectionMenu from "../../components/SelectionMenu/SelectionMenu";
+import PlayerForm from "../../components/PlayerForm/PlayerForm";
 
 export default function Game() {
+    const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     const {
         time: { minutes, seconds },
@@ -35,6 +46,8 @@ export default function Game() {
     });
     const [showMenuDialog, setShowMenuDialog] = useState(false);
     const [dialogPosition, setDialogPosition] = useState({ x: 0, y: 0 });
+
+    const [showUsernameDialog, setShowUsernameDialog] = useState(false);
 
     // Get Game Board from firestore
     useEffect(() => {
@@ -94,12 +107,10 @@ export default function Game() {
 
         const allFound = level.characters.every((char) => char.found);
 
-        if (allFound) {
-            const timeTaken = `${minutes} : ${seconds}`;
-            pauseTimer();
+        if (!allFound) return;
 
-            console.log(timeTaken);
-        }
+        pauseTimer();
+        setShowUsernameDialog(true);
     }, [level, seconds, minutes, pauseTimer]);
 
     const toggleMenuDialog = () => setShowMenuDialog((prev) => !prev);
@@ -155,6 +166,32 @@ export default function Game() {
         }
 
         toggleMenuDialog();
+    };
+
+    const handleUsernameSubmit = async (username: string) => {
+        const docRef = doc(db, "game-boards", "klSgmEqahQCvfFqBxgbM");
+        const scoresColRef = collection(docRef, "scores");
+
+        try {
+            await addDoc(scoresColRef, {
+                name: username,
+                completedOn: getFormattedTime({ minutes, seconds }),
+                achievedOn: serverTimestamp(),
+            });
+            enqueueSnackbar(`Score Submitted for Player: "${username}"!`, {
+                variant: "success",
+            });
+            navigate("/");
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleUsernameSubmitCancel = () => {
+        enqueueSnackbar("You cancelled the Score Submission!", {
+            variant: "info",
+        });
+        navigate("/");
     };
 
     if (!level) {
@@ -221,6 +258,17 @@ export default function Game() {
                     <SelectionMenu
                         characters={charactersToFind}
                         onClick={handleMenuSelection}
+                    />
+                </Dialog>
+            )}
+
+            {charactersToFind.length === 0 && (
+                <Dialog open={showUsernameDialog} onClose={() => {}}>
+                    <PlayerForm
+                        numberOfCharacters={level.characters.length}
+                        time={{ minutes, seconds }}
+                        onSubmit={handleUsernameSubmit}
+                        onCancel={handleUsernameSubmitCancel}
                     />
                 </Dialog>
             )}
