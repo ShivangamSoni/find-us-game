@@ -1,16 +1,20 @@
 import { MouseEventHandler, useEffect, useState } from "react";
 
-import Box from "@mui/material/Box";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-
-import { useSnackbar } from "notistack";
-
-// Static Data [TODO: Get Data from Firestore]
-import levelData from "../../StaticData/level";
+// Firebase Configs
+import { db, storage } from "../../firebase";
+// Firestore
+import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+// Firebase Storage
+import { ref, getDownloadURL } from "firebase/storage";
 
 import { useTimer } from "../../hooks/useTimer";
 import { getCoordinates, verifyLocation } from "../../utils/game";
+
+import { useSnackbar } from "notistack";
+
+import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
 
 import CharacterList from "../../components/CharacterList/CharacterList";
 import Timer from "../../components/Timer/Timer";
@@ -24,7 +28,7 @@ export default function Game() {
         pauseTimer,
     } = useTimer();
 
-    const [level, setLevel] = useState<Game.GameBoard>(levelData);
+    const [level, setLevel] = useState<Game.GameBoard | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<Game.Coordinates>({
         coordX: 0,
         coordY: 0,
@@ -32,11 +36,62 @@ export default function Game() {
     const [showMenuDialog, setShowMenuDialog] = useState(false);
     const [dialogPosition, setDialogPosition] = useState({ x: 0, y: 0 });
 
+    // Get Game Board from firestore
     useEffect(() => {
-        startTimer();
+        const docRef = doc(db, "game-boards", "klSgmEqahQCvfFqBxgbM");
+        const charcatersColRef = collection(docRef, "characters");
+
+        (async () => {
+            try {
+                const docSnap = await getDoc(docRef);
+                const gameBoard = docSnap.data() as Game.RawGameBoard;
+                const gbImageRef = ref(storage, gameBoard.url);
+                const url = await getDownloadURL(gbImageRef);
+                gameBoard.url = url;
+
+                const charactersSnap = await getDocs(charcatersColRef);
+                const characters: Game.Character[] = [];
+                charactersSnap.forEach(async (doc) => {
+                    const data = doc.data() as Game.RawCharacter;
+                    const loc: Game.Coordinates = {
+                        coordX: data.coordX,
+                        coordY: data.coordY,
+                    };
+
+                    const imageRef = ref(storage, data.url);
+                    const url = await getDownloadURL(imageRef);
+
+                    characters.push({
+                        id: doc.id,
+                        loc,
+                        url,
+                        name: data.name,
+                        found: false,
+                    });
+                });
+
+                const levelData: Game.GameBoard = {
+                    id: docSnap.id,
+                    ...gameBoard,
+                    characters,
+                };
+
+                setLevel(levelData);
+            } catch (err) {
+                console.log(err);
+            }
+        })();
     }, []);
 
+    // Start Time
     useEffect(() => {
+        startTimer();
+    }, [startTimer]);
+
+    // End Game if All Characters Found
+    useEffect(() => {
+        if (!level || level.characters.length === 0) return;
+
         const allFound = level.characters.every((char) => char.found);
 
         if (allFound) {
@@ -45,7 +100,7 @@ export default function Game() {
 
             console.log(timeTaken);
         }
-    }, [level, seconds, minutes]);
+    }, [level, seconds, minutes, pauseTimer]);
 
     const toggleMenuDialog = () => setShowMenuDialog((prev) => !prev);
 
@@ -62,9 +117,9 @@ export default function Game() {
         toggleMenuDialog();
     };
 
-    const handleMenuSelection = (name: string) => {
-        const selectedCharacter = level.characters.find(
-            (char) => char.name === name,
+    const handleMenuSelection = (id: string) => {
+        const selectedCharacter = level?.characters.find(
+            (char) => char.id === id,
         );
 
         if (!selectedCharacter) return;
@@ -83,6 +138,8 @@ export default function Game() {
                 variant: "success",
             });
             setLevel((prev) => {
+                if (!prev) return null;
+
                 const characters = prev.characters.map((char) => {
                     if (char.name === selectedCharacter.name) {
                         return { ...char, found };
@@ -100,7 +157,11 @@ export default function Game() {
         toggleMenuDialog();
     };
 
-    const charactersToFind = level.characters.filter((char) => !char.found);
+    if (!level) {
+        return null;
+    }
+
+    const charactersToFind = level.characters.filter((char, i) => !char.found);
 
     return (
         <Box>

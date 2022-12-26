@@ -14,8 +14,8 @@ export default function SelectionMenu({ characters, onClick }: Props) {
     return (
         <Paper>
             <MenuList>
-                {characters.map(({ name, found, url }) => (
-                    <MenuItem key={name} onClick={() => onClick(name)}>
+                {characters.map(({ id, name, url }) => (
+                    <MenuItem key={id} onClick={() => onClick(id)}>
                         <ListItemAvatar>
                             <Avatar alt="" src={url} />
                         </ListItemAvatar>

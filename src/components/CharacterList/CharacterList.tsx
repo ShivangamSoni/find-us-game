@@ -27,9 +27,9 @@ export default function CharacterList({ characters }: Props) {
                     },
                 }}
             >
-                {characters.map(({ name, url, found }) => (
+                {characters.map(({ id, name, url, found }) => (
                     <ImageListItem
-                        key={name}
+                        key={id}
                         sx={{
                             "height": "inherit !important",
                             "& > img": {
@@ -38,7 +38,7 @@ export default function CharacterList({ characters }: Props) {
                             },
                         }}
                     >
-                        <img src={url} alt={name} loading="lazy" />
+                        <img src={url} alt="" />
                         <ImageListItemBar
                             title={name}
                             subtitle={found ? "Found" : "Not Found"}
