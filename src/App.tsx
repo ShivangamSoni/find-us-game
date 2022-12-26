@@ -34,7 +34,7 @@ export default function App() {
     return (
         <SnackbarProvider
             maxSnack={3}
-            autoHideDuration={3000}
+            autoHideDuration={5000}
             domRoot={document.getElementById("notification") as HTMLElement}
         >
             <Container maxWidth="lg" sx={{ padding: { xs: 0 } }}>

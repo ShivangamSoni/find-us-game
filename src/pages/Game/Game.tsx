@@ -23,7 +23,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 import { useTimer } from "../../hooks/useTimer";
 import { getCoordinates, verifyLocation } from "../../utils/game";
-import { getFormattedTime } from "../../utils/getFormattedTime";
 
 import CharacterList from "../../components/CharacterList/CharacterList";
 import Timer from "../../components/Timer/Timer";
@@ -35,6 +34,7 @@ export default function Game() {
     const { enqueueSnackbar } = useSnackbar();
     const {
         time: { minutes, seconds },
+        rawSeconds,
         startTimer,
         pauseTimer,
     } = useTimer();
@@ -111,7 +111,7 @@ export default function Game() {
 
         pauseTimer();
         setShowUsernameDialog(true);
-    }, [level, seconds, minutes, pauseTimer]);
+    }, [level, pauseTimer]);
 
     const toggleMenuDialog = () => setShowMenuDialog((prev) => !prev);
 
@@ -175,7 +175,7 @@ export default function Game() {
         try {
             await addDoc(scoresColRef, {
                 name: username,
-                completedOn: getFormattedTime({ minutes, seconds }),
+                completedIn: rawSeconds,
                 achievedOn: serverTimestamp(),
             });
             enqueueSnackbar(`Score Submitted for Player: "${username}"!`, {

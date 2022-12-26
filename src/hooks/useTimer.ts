@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getTimeFromSeconds } from "../utils/getTimeFromSecs";
 
 export function useTimer() {
     const [seconds, setSeconds] = useState(0);
@@ -17,10 +18,7 @@ export function useTimer() {
         return () => clearInterval(intervalId.current);
     }, [isRunning]);
 
-    const time = {
-        minutes: Math.floor(seconds / 60),
-        seconds: Math.floor(seconds % 60),
-    };
+    const time = getTimeFromSeconds(seconds);
 
     const startTimer = useCallback(() => setIsRunning(true), [setIsRunning]);
     const pauseTimer = useCallback(() => setIsRunning(false), [setIsRunning]);
@@ -30,5 +28,5 @@ export function useTimer() {
         setSeconds(0);
     }, [setIsRunning, setSeconds]);
 
-    return { time, startTimer, pauseTimer, resetTimer };
+    return { time, startTimer, pauseTimer, resetTimer, rawSeconds: seconds };
 }

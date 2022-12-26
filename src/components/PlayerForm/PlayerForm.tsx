@@ -52,7 +52,10 @@ export default function PlayerForm({
     });
 
     const handleSubmit: SubmitHandler<FormSchemaType> = (data) => {
-        const username = filter.clean(data.username).replaceAll("*", "").trim();
+        const username = filter
+            .clean(data.username)
+            .replaceAll("*", "🤮")
+            .trim();
         localStorage.setItem("player-name", username);
         onSubmit(username);
     };
