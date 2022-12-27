@@ -1,6 +1,3 @@
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-
 import { SvgIconTypeMap } from "@mui/material";
 import { OverridableComponent } from "@mui/material/OverridableComponent";
 import Paper from "@mui/material/Paper";
@@ -8,6 +5,8 @@ import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import ImageListItemBar from "@mui/material/ImageListItemBar";
 import IconButton from "@mui/material/IconButton";
+
+import ImageKitImg from "../ImageKitImg/ImageKitImg";
 
 interface Props {
     levels: Game.RawGameBoard[];
@@ -26,13 +25,10 @@ export default function LevelSelector({
     fullScreen = true,
     height = "100%",
 }: Props) {
-    const theme = useTheme();
-    const match = useMediaQuery(theme.breakpoints.down("sm"));
-
     return (
         <Paper variant="elevation" sx={{ p: 1 }}>
             <ImageList
-                variant={match ? "standard" : "woven"}
+                variant="standard"
                 gap={8}
                 sx={{
                     height: height,
@@ -47,18 +43,20 @@ export default function LevelSelector({
                 {levels.map(({ id, url, title }) => (
                     <ImageListItem
                         key={id}
-                        sx={
-                            !fullScreen
-                                ? {
-                                      "height": "inherit !important",
-                                      "& > img": {
-                                          height: "100% !important",
-                                      },
-                                  }
-                                : {}
-                        }
+                        sx={{
+                            "height": "inherit !important",
+                            "& > img": {
+                                height: "100% !important",
+                                objectFit: "cover",
+                                ...(fullScreen
+                                    ? {
+                                          width: "100% !important",
+                                      }
+                                    : {}),
+                            },
+                        }}
                     >
-                        <img src={url} alt="" />
+                        <ImageKitImg src={url} alt="" />
                         <ImageListItemBar
                             title={title}
                             position="top"

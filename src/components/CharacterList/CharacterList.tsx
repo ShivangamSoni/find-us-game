@@ -7,6 +7,8 @@ import IconButton from "@mui/material/IconButton";
 import QuestionMark from "@mui/icons-material/QuestionMark";
 import Done from "@mui/icons-material/Done";
 
+import ImageKitImg from "../ImageKitImg/ImageKitImg";
+
 interface Props {
     characters: Game.Character[];
 }
@@ -38,7 +40,7 @@ export default function CharacterList({ characters }: Props) {
                             },
                         }}
                     >
-                        <img src={url} alt="" />
+                        <ImageKitImg src={url} alt="" />
                         <ImageListItemBar
                             title={name}
                             subtitle={found ? "Found" : "Not Found"}

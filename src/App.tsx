@@ -15,6 +15,8 @@ import { useAuthCtx } from "./Context/AuthContext";
 import { useAppDispatch } from "./hooks/redux";
 import { setGameBoards } from "./REDUX/gameSlice";
 
+import { generateImageKitURL } from "./utils/ImageKit";
+
 import { SnackbarProvider } from "notistack";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -66,7 +68,9 @@ export default function App() {
                     return getDownloadURL(imageRef);
                 }),
             );
-            imageURLs.forEach((url, idx) => (levelsData[idx].url = url));
+            imageURLs.forEach(
+                (url, idx) => (levelsData[idx].url = generateImageKitURL(url)),
+            );
 
             dispatch(setGameBoards(levelsData));
         })();
@@ -80,8 +84,8 @@ export default function App() {
         >
             <Container maxWidth="lg" sx={{ padding: { xs: 0 } }}>
                 <Header />
+                <Toolbar variant="dense" />
                 <Box component="main" sx={{ px: 2, py: 4 }}>
-                    <Toolbar variant="dense" />
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/game/:boardId" element={<Game />} />

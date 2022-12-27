@@ -23,9 +23,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 import { useTimer } from "../../hooks/useTimer";
 import { getCoordinates, verifyLocation } from "../../utils/game";
+import { generateImageKitURL } from "../../utils/ImageKit";
 
 import CharacterList from "../../components/CharacterList/CharacterList";
 import Timer from "../../components/Timer/Timer";
+import ImageKitImg from "../../components/ImageKitImg/ImageKitImg";
 import SelectionMenu from "../../components/SelectionMenu/SelectionMenu";
 import PlayerForm from "../../components/PlayerForm/PlayerForm";
 
@@ -50,7 +52,7 @@ export default function Game() {
 
     const [showUsernameDialog, setShowUsernameDialog] = useState(false);
 
-    // Get Game Board from firestore
+    // Fetch Game Board from firestore
     useEffect(() => {
         const docRef = doc(db, "game-boards", boardId);
         const charactersColRef = collection(docRef, "characters");
@@ -106,7 +108,8 @@ export default function Game() {
                     }),
                 );
                 characterImages.forEach(
-                    (url, idx) => (characters[idx].url = url),
+                    (url, idx) =>
+                        (characters[idx].url = generateImageKitURL(url)),
                 );
 
                 const levelData: Game.GameBoard = {
@@ -264,7 +267,7 @@ export default function Game() {
                     },
                 }}
             >
-                <img src={level.url} alt="" onClick={handleClick} />
+                <ImageKitImg src={level.url} alt="" onClick={handleClick} />
             </Box>
 
             {charactersToFind.length !== 0 && (
