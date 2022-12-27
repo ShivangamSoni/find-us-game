@@ -1,114 +1,42 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Firebase
-import { db } from "../../firebase";
-// Firestore
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db, storage } from "../../firebase";
+import { collection, getDocs } from "firebase/firestore";
+import { ref, getDownloadURL } from "firebase/storage";
 
-import type { TableCellProps } from "@mui/material";
-import Paper from "@mui/material/Paper";
-import TableContainer from "@mui/material/TableContainer";
-import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import TableBody from "@mui/material/TableBody";
-
-import { getTimeFromSeconds } from "../../utils/getTimeFromSecs";
-import { getFormattedTime } from "../../utils/getFormattedTime";
-
-interface Columns extends Pick<TableCellProps, "align"> {
-    id: number;
-    label: string;
-}
-
-const COLUMNS: Columns[] = [
-    { id: 1, label: "Sr. No.", align: "center" },
-    { id: 2, label: "Player Name", align: "left" },
-    { id: 3, label: "Time (Min:Sec)", align: "center" },
-    { id: 4, label: "Achieved On", align: "center" },
-];
-
-const DateFormatter = new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "medium",
-});
+import LevelSelector from "../../components/LevelSelector/LevelSelector";
 
 export default function Home() {
-    const [leaderBoard, setLeaderBoard] = useState<LeaderBoard.Data[]>([]);
+    const navigate = useNavigate();
+    const [levels, setLevels] = useState<Game.RawGameBoard[]>([]);
 
     useEffect(() => {
         (async () => {
-            const collectionRef = collection(
-                db,
-                "game-boards",
-                "klSgmEqahQCvfFqBxgbM",
-                "scores",
-            );
+            const boardsCollectionRef = collection(db, "game-boards");
+            const docs = await getDocs(boardsCollectionRef);
 
-            const scoresQuery = query(
-                collectionRef,
-                orderBy("completedIn", "asc"),
-            );
-
-            const scores: LeaderBoard.Data[] = [];
-            const docs = await getDocs(scoresQuery);
+            const levelsData: Game.RawGameBoard[] = [];
             docs.forEach((doc) => {
-                const data = doc.data() as LeaderBoard.RawData;
-                const completedIn = getFormattedTime(
-                    getTimeFromSeconds(data.completedIn),
-                );
-                scores.push({
-                    id: doc.id,
-                    name: data.name,
-                    completedIn,
-                    achievedOn: data.achievedOn.toDate(),
-                });
+                const data = doc.data() as Game.RawGameBoard;
+                levelsData.push({ ...data, id: doc.id });
             });
-
-            setLeaderBoard(scores);
+            const imageURLs = await Promise.all(
+                levelsData.map((doc) => {
+                    const imageRef = ref(storage, doc.url);
+                    return getDownloadURL(imageRef);
+                }),
+            );
+            imageURLs.forEach((url, idx) => (levelsData[idx].url = url));
+            setLevels(levelsData);
         })();
     }, []);
 
-    return (
-        <Paper sx={{ height: "100%", overflow: "hidden" }}>
-            <TableContainer sx={{ maxHeight: "85vh" }}>
-                <Table stickyHeader>
-                    <caption>Global Leader Board</caption>
-                    <TableHead>
-                        <TableRow>
-                            {COLUMNS.map(({ id, align, label }) => (
-                                <TableCell key={id} align={align}>
-                                    {label}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {leaderBoard.map(
-                            ({ id, name, completedIn, achievedOn }, idx) => (
-                                <TableRow key={id}>
-                                    <TableCell
-                                        variant="head"
-                                        component="th"
-                                        scope="row"
-                                        align="center"
-                                    >
-                                        {idx + 1}
-                                    </TableCell>
-                                    <TableCell align="left">{name}</TableCell>
-                                    <TableCell align="center">
-                                        {completedIn}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {DateFormatter.format(achievedOn)}
-                                    </TableCell>
-                                </TableRow>
-                            ),
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Paper>
-    );
+    const handleLevelSelect = (id: string) => {
+        console.log(id);
+        navigate("/game");
+    };
+
+    return <LevelSelector levels={levels} onSelect={handleLevelSelect} />;
 }

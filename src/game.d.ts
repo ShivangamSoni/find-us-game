@@ -24,6 +24,7 @@ declare namespace Game {
         coordY: number;
     }
     interface RawGameBoard {
+        id?: string;
         title: string;
         url: string;
     }
