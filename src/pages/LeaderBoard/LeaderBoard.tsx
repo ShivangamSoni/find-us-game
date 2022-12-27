@@ -84,22 +84,28 @@ export default function LeaderBoard() {
     const handlePlayGame = () => navigate(`/game/${selectedBoardId}`);
 
     return (
-        <>
-            <Box sx={{ height: 350, mb: 2 }}>
-                <LevelSelector
-                    levels={levels}
-                    ActionIcon={ViewIcon}
-                    actionTitleStart="View LeaderBoard"
-                    onSelect={handleLevelSelect}
-                    fullScreen={false}
-                />
-            </Box>
+        <Box
+            sx={{
+                display: "grid",
+                gap: 2,
+                gridTemplateRows: "auto 1fr",
+                maxHeight: "88vh",
+            }}
+        >
+            <LevelSelector
+                levels={levels}
+                ActionIcon={ViewIcon}
+                actionTitleStart="View LeaderBoard"
+                onSelect={handleLevelSelect}
+                fullScreen={false}
+                height={250}
+            />
             {selectedBoardId && (
                 <LeaderBoardTable
                     leaderBoardData={leaderBoardData}
                     onPlayGame={handlePlayGame}
                 />
             )}
-        </>
+        </Box>
     );
 }

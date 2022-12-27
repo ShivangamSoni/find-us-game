@@ -1,3 +1,6 @@
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
 import { TableCellProps } from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import Alert from "@mui/material/Alert";
@@ -36,61 +39,90 @@ export default function LeaderBoardTable({
     leaderBoardData,
     onPlayGame,
 }: Props) {
+    const theme = useTheme();
+    const match = useMediaQuery(theme.breakpoints.down("md"));
+
     return (
-        <Paper sx={{ height: "100%", overflow: "hidden" }}>
+        <Paper
+            sx={{
+                height: "100%",
+                overflow: "hidden",
+            }}
+        >
             {leaderBoardData.length === 0 ? (
                 <Alert
                     severity="info"
                     action={
-                        <Button onClick={onPlayGame}>Play this Level</Button>
+                        <Button color="info" onClick={onPlayGame}>
+                            Play this Level
+                        </Button>
                     }
                 >
                     <AlertTitle>No Leader Board Data</AlertTitle>
                     Leader Board not available for the Selected Level.
                 </Alert>
             ) : (
-                <TableContainer sx={{ maxHeight: "85vh" }}>
-                    <Table stickyHeader>
-                        <caption>Global Leader Board</caption>
-                        <TableHead>
-                            <TableRow>
-                                {COLUMNS.map(({ id, align, label }) => (
-                                    <TableCell key={id} align={align}>
-                                        {label}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {leaderBoardData.map(
-                                (
-                                    { id, name, completedIn, achievedOn },
-                                    idx,
-                                ) => (
-                                    <TableRow key={id}>
-                                        <TableCell
-                                            variant="head"
-                                            component="th"
-                                            scope="row"
-                                            align="center"
-                                        >
-                                            {idx + 1}
+                <>
+                    <Alert
+                        severity="success"
+                        action={
+                            <Button color="success" onClick={onPlayGame}>
+                                Play this Level
+                            </Button>
+                        }
+                        icon={false}
+                    >
+                        <AlertTitle>
+                            Try if you can get a better Time.
+                        </AlertTitle>
+                    </Alert>
+                    <TableContainer sx={{ maxHeight: "90%" }}>
+                        <Table stickyHeader size={match ? "small" : "medium"}>
+                            <caption>Global Leader Board</caption>
+                            <TableHead>
+                                <TableRow>
+                                    {COLUMNS.map(({ id, align, label }) => (
+                                        <TableCell key={id} align={align}>
+                                            {label}
                                         </TableCell>
-                                        <TableCell align="left">
-                                            {name}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {completedIn}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {DateFormatter.format(achievedOn)}
-                                        </TableCell>
-                                    </TableRow>
-                                ),
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                                    ))}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {leaderBoardData.map(
+                                    (
+                                        { id, name, completedIn, achievedOn },
+                                        idx,
+                                    ) => (
+                                        <TableRow key={id}>
+                                            <TableCell
+                                                component="th"
+                                                scope="row"
+                                                align="center"
+                                                sx={{
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                {idx + 1}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {name}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {completedIn}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {DateFormatter.format(
+                                                    achievedOn,
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    ),
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </>
             )}
         </Paper>
     );
