@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Firebase
-import { db, storage } from "../../firebase";
+import { db } from "../../firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { ref, getDownloadURL } from "firebase/storage";
 
 import Box from "@mui/material/Box";
 import ViewIcon from "@mui/icons-material/TableView";
@@ -14,37 +13,24 @@ import LeaderBoardTable from "../../components/LeaderBoardTable/LeaderBoardTable
 
 import { getFormattedTime } from "../../utils/getFormattedTime";
 import { getTimeFromSeconds } from "../../utils/getTimeFromSecs";
+import { useAppSelector } from "../../hooks/redux";
 
 export default function LeaderBoard() {
     const navigate = useNavigate();
-    const [levels, setLevels] = useState<Game.RawGameBoard[]>([]);
+    const levels = useAppSelector((state) => state.game.gameBoards);
     const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
     const [leaderBoardData, setLeaderBoardData] = useState<LeaderBoard.Data[]>(
         [],
     );
 
+    // Select the First Game Board by Default
     useEffect(() => {
-        (async () => {
-            const boardsCollectionRef = collection(db, "game-boards");
-            const docs = await getDocs(boardsCollectionRef);
+        if (levels.length !== 0 && !selectedBoardId) {
+            setSelectedBoardId(levels[0].id);
+        }
+    }, [levels, selectedBoardId]);
 
-            const levelsData: Game.RawGameBoard[] = [];
-            docs.forEach((doc) => {
-                const data = doc.data() as Game.RawGameBoard;
-                levelsData.push({ ...data, id: doc.id });
-            });
-            const imageURLs = await Promise.all(
-                levelsData.map((doc) => {
-                    const imageRef = ref(storage, doc.url);
-                    return getDownloadURL(imageRef);
-                }),
-            );
-            imageURLs.forEach((url, idx) => (levelsData[idx].url = url));
-            setLevels(levelsData);
-            setSelectedBoardId(levelsData[0].id ?? null);
-        })();
-    }, []);
-
+    // Fetch Leader Board Data from Firestore
     useEffect(() => {
         if (!selectedBoardId) return;
 
@@ -80,6 +66,9 @@ export default function LeaderBoard() {
         })();
     }, [selectedBoardId]);
 
+    const gameBoardName =
+        levels.find((level) => level.id === selectedBoardId)?.title ?? "";
+
     const handleLevelSelect = (id: string) => setSelectedBoardId(id);
     const handlePlayGame = () => navigate(`/game/${selectedBoardId}`);
 
@@ -103,6 +92,7 @@ export default function LeaderBoard() {
             {selectedBoardId && (
                 <LeaderBoardTable
                     leaderBoardData={leaderBoardData}
+                    gameBoardName={gameBoardName}
                     onPlayGame={handlePlayGame}
                 />
             )}

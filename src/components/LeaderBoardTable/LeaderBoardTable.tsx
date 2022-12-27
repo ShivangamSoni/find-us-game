@@ -8,6 +8,7 @@ import AlertTitle from "@mui/material/AlertTitle";
 import Button from "@mui/material/Button";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
+import Typography from "@mui/material/Typography";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
@@ -32,15 +33,19 @@ const DateFormatter = new Intl.DateTimeFormat("en-US", {
 
 interface Props {
     leaderBoardData: LeaderBoard.Data[];
+    gameBoardName: string;
     onPlayGame: () => void;
 }
 
 export default function LeaderBoardTable({
     leaderBoardData,
+    gameBoardName,
     onPlayGame,
 }: Props) {
     const theme = useTheme();
     const match = useMediaQuery(theme.breakpoints.down("md"));
+
+    const playLevelText = `Play Level: ${gameBoardName}`;
 
     return (
         <Paper
@@ -54,12 +59,12 @@ export default function LeaderBoardTable({
                     severity="info"
                     action={
                         <Button color="info" onClick={onPlayGame}>
-                            Play this Level
+                            {playLevelText}
                         </Button>
                     }
                 >
-                    <AlertTitle>No Leader Board Data</AlertTitle>
-                    Leader Board not available for the Selected Level.
+                    <AlertTitle>No Leader Board</AlertTitle>
+                    Leader Board not available for Level: {gameBoardName}.
                 </Alert>
             ) : (
                 <>
@@ -67,7 +72,7 @@ export default function LeaderBoardTable({
                         severity="success"
                         action={
                             <Button color="success" onClick={onPlayGame}>
-                                Play this Level
+                                {playLevelText}
                             </Button>
                         }
                         icon={false}
@@ -78,7 +83,22 @@ export default function LeaderBoardTable({
                     </Alert>
                     <TableContainer sx={{ maxHeight: "90%" }}>
                         <Table stickyHeader size={match ? "small" : "medium"}>
-                            <caption>Global Leader Board</caption>
+                            <Typography
+                                component="caption"
+                                sx={{
+                                    position: "sticky",
+                                    bottom: 0,
+                                    zIndex: 2,
+                                    backgroundColor: "#fff",
+                                    borderTop:
+                                        "1px solid rgba(224, 224, 224, 1)",
+                                }}
+                            >
+                                <Typography variant="h6">
+                                    LEVEL: <strong>{gameBoardName}</strong>{" "}
+                                    Global Leader Board
+                                </Typography>
+                            </Typography>
                             <TableHead>
                                 <TableRow>
                                     {COLUMNS.map(({ id, align, label }) => (
