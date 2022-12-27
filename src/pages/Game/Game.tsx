@@ -58,34 +58,58 @@ export default function Game() {
         (async () => {
             try {
                 const docSnap = await getDoc(docRef);
-                const gameBoard = docSnap.data() as Game.RawGameBoard;
+                if (!docSnap.exists()) {
+                    enqueueSnackbar(
+                        <>
+                            Invalid Game Board ID.
+                            <br />
+                            Please Select one from Listing.
+                        </>,
+                        {
+                            variant: "error",
+                        },
+                    );
+                    navigate("/");
+                    return;
+                }
+
+                const gameBoard = {
+                    ...docSnap.data(),
+                    id: docSnap.id,
+                } as Game.RawGameBoard;
                 const gbImageRef = ref(storage, gameBoard.url);
                 const url = await getDownloadURL(gbImageRef);
                 gameBoard.url = url;
 
                 const charactersSnap = await getDocs(charactersColRef);
                 const characters: Game.Character[] = [];
-                charactersSnap.forEach(async (doc) => {
+                charactersSnap.forEach((doc) => {
                     const data = doc.data() as Game.RawCharacter;
                     const loc: Game.Coordinates = {
                         coordX: data.coordX,
                         coordY: data.coordY,
                     };
 
-                    const imageRef = ref(storage, data.url);
-                    const url = await getDownloadURL(imageRef);
-
                     characters.push({
                         id: doc.id,
                         loc,
-                        url,
                         name: data.name,
+                        url: data.url,
                         found: false,
                     });
                 });
 
+                const characterImages = await Promise.all(
+                    characters.map((char) => {
+                        const imageRef = ref(storage, char.url);
+                        return getDownloadURL(imageRef);
+                    }),
+                );
+                characterImages.forEach(
+                    (url, idx) => (characters[idx].url = url),
+                );
+
                 const levelData: Game.GameBoard = {
-                    id: docSnap.id,
                     ...gameBoard,
                     characters,
                 };
@@ -95,7 +119,7 @@ export default function Game() {
                 console.log(err);
             }
         })();
-    }, [boardId]);
+    }, [boardId, navigate, enqueueSnackbar]);
 
     // Start Time
     useEffect(() => {
@@ -199,7 +223,7 @@ export default function Game() {
         return null;
     }
 
-    const charactersToFind = level.characters.filter((char, i) => !char.found);
+    const charactersToFind = level.characters.filter((char) => !char.found);
 
     return (
         <Box>
