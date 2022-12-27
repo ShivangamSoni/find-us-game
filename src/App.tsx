@@ -14,6 +14,7 @@ import Container from "@mui/material/Container";
 import Header from "./components/Header/Header";
 import Home from "./pages/Home/Home";
 import Game from "./pages/Game/Game";
+import LeaderBoard from "./pages/LeaderBoard/LeaderBoard";
 
 export default function App() {
     const { user } = useAuthCtx();
@@ -43,7 +44,8 @@ export default function App() {
                     <Toolbar variant="dense" />
                     <Routes>
                         <Route path="/" element={<Home />} />
-                        <Route path="/game" element={<Game />} />
+                        <Route path="/game/:boardId" element={<Game />} />
+                        <Route path="/leader-board" element={<LeaderBoard />} />
                     </Routes>
                 </Box>
             </Container>

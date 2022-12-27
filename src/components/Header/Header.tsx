@@ -30,12 +30,7 @@ export default function Header() {
         {
             id: 1,
             title: "Leader Board",
-            link: "/",
-        },
-        {
-            id: 2,
-            title: "Start Game",
-            link: "/game",
+            link: "/leader-board",
         },
     ];
 

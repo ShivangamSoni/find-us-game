@@ -6,6 +6,8 @@ import { db, storage } from "../../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { ref, getDownloadURL } from "firebase/storage";
 
+import PlayIcon from "@mui/icons-material/PlayArrow";
+
 import LevelSelector from "../../components/LevelSelector/LevelSelector";
 
 export default function Home() {
@@ -33,10 +35,14 @@ export default function Home() {
         })();
     }, []);
 
-    const handleLevelSelect = (id: string) => {
-        console.log(id);
-        navigate("/game");
-    };
+    const handleLevelSelect = (id: string) => navigate(`/game/${id}`);
 
-    return <LevelSelector levels={levels} onSelect={handleLevelSelect} />;
+    return (
+        <LevelSelector
+            levels={levels}
+            ActionIcon={PlayIcon}
+            actionTitleStart={"Play Level"}
+            onSelect={handleLevelSelect}
+        />
+    );
 }
