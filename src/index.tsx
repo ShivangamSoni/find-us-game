@@ -13,6 +13,10 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import AuthProvider from "./Context/AuthContext";
 
+// Redux
+import { Provider } from "react-redux";
+import store from "./REDUX/store";
+
 import App from "./App";
 
 const root = ReactDOM.createRoot(
@@ -22,9 +26,11 @@ root.render(
     <React.StrictMode>
         <CssBaseline />
         <BrowserRouter>
-            <AuthProvider>
-                <App />
-            </AuthProvider>
+            <Provider store={store}>
+                <AuthProvider>
+                    <App />
+                </AuthProvider>
+            </Provider>
         </BrowserRouter>
     </React.StrictMode>,
 );
