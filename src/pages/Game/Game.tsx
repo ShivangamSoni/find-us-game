@@ -206,7 +206,7 @@ export default function Game() {
             enqueueSnackbar(`Score Submitted for Player: "${username}"!`, {
                 variant: "success",
             });
-            navigate(`/leader-board`);
+            navigateToLeaderBoard();
         } catch (err) {
             console.log(err);
         }
@@ -216,7 +216,13 @@ export default function Game() {
         enqueueSnackbar("You cancelled the Score Submission!", {
             variant: "info",
         });
-        navigate(`/leader-board`);
+        navigateToLeaderBoard();
+    };
+
+    const navigateToLeaderBoard = () => {
+        navigate(`/leader-board`, {
+            state: { boardId },
+        });
     };
 
     if (!level) {

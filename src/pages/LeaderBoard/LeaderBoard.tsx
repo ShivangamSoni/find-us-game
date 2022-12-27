@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Firebase
 import { db } from "../../firebase";
@@ -17,8 +17,18 @@ import { useAppSelector } from "../../hooks/redux";
 
 export default function LeaderBoard() {
     const navigate = useNavigate();
+    const { state } = useLocation();
     const levels = useAppSelector((state) => state.game.gameBoards);
-    const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
+    const [selectedBoardId, setSelectedBoardId] = useState<string | null>(
+        () => {
+            let boardId = null;
+            // Router State will have boardId when redirected from Game
+            if (state) {
+                boardId = state.boardId;
+            }
+            return boardId;
+        },
+    );
     const [leaderBoardData, setLeaderBoardData] = useState<LeaderBoard.Data[]>(
         [],
     );
@@ -69,7 +79,11 @@ export default function LeaderBoard() {
     const gameBoardName =
         levels.find((level) => level.id === selectedBoardId)?.title ?? "";
 
-    const handleLevelSelect = (id: string) => setSelectedBoardId(id);
+    const handleLevelSelect = (id: string) => {
+        setSelectedBoardId(id);
+        // Reset Router State, Otherwise on page reload states boardId is loaded
+        window.history.replaceState(null, "");
+    };
     const handlePlayGame = () => navigate(`/game/${selectedBoardId}`);
 
     return (
