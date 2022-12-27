@@ -1,5 +1,5 @@
 import { MouseEventHandler, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 // Firebase Configs
 import { db, storage } from "../../firebase";
@@ -31,6 +31,7 @@ import PlayerForm from "../../components/PlayerForm/PlayerForm";
 
 export default function Game() {
     const navigate = useNavigate();
+    const boardId = useParams().boardId as string;
     const { enqueueSnackbar } = useSnackbar();
     const {
         time: { minutes, seconds },
@@ -51,8 +52,8 @@ export default function Game() {
 
     // Get Game Board from firestore
     useEffect(() => {
-        const docRef = doc(db, "game-boards", "klSgmEqahQCvfFqBxgbM");
-        const charcatersColRef = collection(docRef, "characters");
+        const docRef = doc(db, "game-boards", boardId);
+        const charactersColRef = collection(docRef, "characters");
 
         (async () => {
             try {
@@ -62,7 +63,7 @@ export default function Game() {
                 const url = await getDownloadURL(gbImageRef);
                 gameBoard.url = url;
 
-                const charactersSnap = await getDocs(charcatersColRef);
+                const charactersSnap = await getDocs(charactersColRef);
                 const characters: Game.Character[] = [];
                 charactersSnap.forEach(async (doc) => {
                     const data = doc.data() as Game.RawCharacter;
@@ -94,7 +95,7 @@ export default function Game() {
                 console.log(err);
             }
         })();
-    }, []);
+    }, [boardId]);
 
     // Start Time
     useEffect(() => {
@@ -169,7 +170,7 @@ export default function Game() {
     };
 
     const handleUsernameSubmit = async (username: string) => {
-        const docRef = doc(db, "game-boards", "klSgmEqahQCvfFqBxgbM");
+        const docRef = doc(db, "game-boards", boardId);
         const scoresColRef = collection(docRef, "scores");
 
         try {
@@ -181,7 +182,7 @@ export default function Game() {
             enqueueSnackbar(`Score Submitted for Player: "${username}"!`, {
                 variant: "success",
             });
-            navigate("/");
+            navigate(`/leader-board`);
         } catch (err) {
             console.log(err);
         }
@@ -191,7 +192,7 @@ export default function Game() {
         enqueueSnackbar("You cancelled the Score Submission!", {
             variant: "info",
         });
-        navigate("/");
+        navigate(`/leader-board`);
     };
 
     if (!level) {
