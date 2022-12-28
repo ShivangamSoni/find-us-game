@@ -91,17 +91,17 @@ export default function App() {
             domRoot={document.getElementById("notification") as HTMLElement}
         >
             <Container
-                maxWidth={gamePathMatch ? false : "lg"}
+                maxWidth={isGamePage ? "xl" : "lg"}
                 sx={{ padding: { xs: 0 } }}
             >
                 <Header isMobile={isMobile} isGamePage={isGamePage} />
-                {!isMobile && !isGamePage && <Toolbar />}
+                {!isMobile && !isGamePage && <Toolbar variant="dense" />}
                 <Box
                     component="main"
                     sx={{
-                        px: gamePathMatch ? 0 : 2,
-                        py: gamePathMatch ? 0 : 4,
-                        pt: 2,
+                        px: isGamePage ? 0 : 1,
+                        pt: isGamePage ? 0 : 3,
+                        pb: isGamePage ? 0 : 2,
                     }}
                 >
                     <Routes>
@@ -110,7 +110,7 @@ export default function App() {
                         <Route path="/leader-board" element={<LeaderBoard />} />
                     </Routes>
                 </Box>
-                {(isMobile || isGamePage) && <Toolbar />}
+                {(isMobile || isGamePage) && <Toolbar variant="dense" />}
             </Container>
         </SnackbarProvider>
     );

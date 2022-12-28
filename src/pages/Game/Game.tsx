@@ -25,8 +25,7 @@ import { useTimer } from "../../hooks/useTimer";
 import { getCoordinates, verifyLocation } from "../../utils/game";
 import { generateImageKitURL } from "../../utils/ImageKit";
 
-import CharacterList from "../../components/CharacterList/CharacterList";
-import Timer from "../../components/Timer/Timer";
+import GameHeader from "../../components/GameHeader/GameHeader";
 import ImageKitImg from "../../components/ImageKitImg/ImageKitImg";
 import SelectionMenu from "../../components/SelectionMenu/SelectionMenu";
 import PlayerForm from "../../components/PlayerForm/PlayerForm";
@@ -236,29 +235,10 @@ export default function Game() {
 
     return (
         <Box>
-            <Box
-                component="header"
-                sx={{
-                    display: "flex",
-                    alignItems: {
-                        sm: "center",
-                    },
-                    justifyContent: "space-between",
-                    flexDirection: {
-                        xs: "column",
-                        sm: "row",
-                    },
-                    gap: 1,
-                    mb: 1,
-                }}
-            >
-                <Box sx={{ width: "100%" }}>
-                    <CharacterList characters={level.characters} />
-                </Box>
-                <Box>
-                    <Timer minutes={minutes} seconds={seconds} />
-                </Box>
-            </Box>
+            <GameHeader
+                characters={level.characters}
+                time={{ minutes, seconds }}
+            />
 
             <Box
                 sx={{
@@ -287,6 +267,7 @@ export default function Game() {
                             m: 0,
                         },
                     }}
+                    disableEnforceFocus
                 >
                     <DialogTitle>Which Character</DialogTitle>
                     <SelectionMenu

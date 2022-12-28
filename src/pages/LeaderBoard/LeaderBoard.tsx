@@ -6,7 +6,7 @@ import { db } from "../../firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
 import Box from "@mui/material/Box";
-import ViewIcon from "@mui/icons-material/TableView";
+import ViewIcon from "@mui/icons-material/Leaderboard";
 
 import LevelSelector from "../../components/LevelSelector/LevelSelector";
 import LeaderBoardTable from "../../components/LeaderBoardTable/LeaderBoardTable";
