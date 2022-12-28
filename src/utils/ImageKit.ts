@@ -7,10 +7,10 @@ export function generateImageKitURL(googleCloudURL: string) {
 }
 
 export function generateSrcSet(url: string) {
-    return `${url}&tr=w-300,dpr-${window.devicePixelRatio} 300w,
-    ${url}&tr=w-420,dpr-${window.devicePixelRatio} 420w,
-    ${url}&tr=w-540,dpr-${window.devicePixelRatio} 540w
-    ${url}&tr=w-660,dpr-${window.devicePixelRatio} 660w`;
+    return `${url}&tr=w-300 300w,
+    ${url}&tr=w-420 420w,
+    ${url}&tr=w-540 540w
+    ${url}&tr=w-660 660w`;
 }
 
 export const idealSizes =
