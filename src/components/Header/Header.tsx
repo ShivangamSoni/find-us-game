@@ -1,139 +1,71 @@
-import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 // MUI
+import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Drawer from "@mui/material/Drawer";
-import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 
-import MenuIcon from "@mui/icons-material/Menu";
+import HomeIcon from "@mui/icons-material/ViewList";
+import LeaderBoardIcon from "@mui/icons-material/Leaderboard";
 
-export default function Header() {
+const NAV_ITEMS = [
+    {
+        id: 1,
+        label: "Levels",
+        link: "/",
+        icon: <HomeIcon />,
+    },
+    {
+        id: 2,
+        label: "Leader Board",
+        link: "/leader-board",
+        icon: <LeaderBoardIcon />,
+    },
+];
+
+interface Props {
+    isMobile: boolean;
+    isGamePage: boolean;
+}
+
+export default function Header({ isMobile, isGamePage }: Props) {
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-    const handleDrawerToggle = () => setIsMobileOpen((prev) => !prev);
     const handleNavigation = (link: string) => navigate(link);
 
-    const NAV_ITEMS = [
-        {
-            id: 1,
-            title: "Leader Board",
-            link: "/leader-board",
-        },
-    ];
-
-    const drawerContainer =
-        window !== undefined ? () => window.document.body : undefined;
-
     return (
-        <Box sx={{ display: "flex" }} component="header">
-            <AppBar component="nav">
-                <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open navigation drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { md: "none" } }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography
-                        component="h1"
-                        variant="h4"
-                        sx={{
-                            flexGrow: 1,
-                            display: {
-                                xs: "none",
-                                sm: "block",
-                            },
-                        }}
-                    >
-                        Find Us Game
-                    </Typography>
-                    <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
-                        {NAV_ITEMS.map(({ id, title, link }) => (
-                            <Button
-                                key={id}
-                                color={
-                                    pathname === link ? "success" : "secondary"
-                                }
-                                variant={
-                                    pathname === link ? "contained" : "outlined"
-                                }
-                                onClick={(e) => handleNavigation(link)}
-                            >
-                                {title}
-                            </Button>
-                        ))}
-                    </Box>
-                </Toolbar>
-            </AppBar>
-
+        <Paper
+            component="header"
+            sx={{
+                position: "fixed",
+                ...(isMobile || isGamePage ? { bottom: 0 } : { top: 0 }),
+                left: 0,
+                right: 0,
+                zIndex: 99,
+                display: "grid",
+                placeItems: "center stretch",
+            }}
+            elevation={3}
+        >
             <Box component="nav">
-                <Drawer
-                    container={drawerContainer}
-                    variant="temporary"
-                    open={isMobileOpen}
-                    onClose={handleDrawerToggle}
-                    ModalProps={{
-                        keepMounted: true,
-                    }}
-                    sx={{
-                        "display": { xs: "block", md: "none" },
-                        "& .MuiDrawer-paper": {
-                            boxSizing: "border-box",
-                            width: DRAWER_WIDTH,
-                        },
-                    }}
+                <BottomNavigation
+                    showLabels
+                    value={pathname}
+                    onChange={(e, link) => handleNavigation(link)}
                 >
-                    <Box
-                        onClick={handleDrawerToggle}
-                        sx={{ textAlign: "center" }}
-                    >
-                        <Typography variant="h6" sx={{ my: 2 }}>
-                            Find Us Game
-                        </Typography>
-                        <Divider />
-                        <List>
-                            {NAV_ITEMS.map(({ id, title, link }) => (
-                                <ListItem key={id} disablePadding>
-                                    <ListItemButton
-                                        sx={{ textAlign: "center" }}
-                                        selected={pathname === link}
-                                        onClick={(e) => handleNavigation(link)}
-                                    >
-                                        <ListItemText primary={title} />
-                                    </ListItemButton>
-                                </ListItem>
-                            ))}
-                            <ListItem disablePadding>
-                                <ListItemButton
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "stretch",
-                                    }}
-                                ></ListItemButton>
-                            </ListItem>
-                        </List>
-                    </Box>
-                </Drawer>
+                    {NAV_ITEMS.map(({ id, label, link, icon }) => (
+                        <BottomNavigationAction
+                            role="link"
+                            key={id}
+                            label={label}
+                            icon={icon}
+                            value={link}
+                        />
+                    ))}
+                </BottomNavigation>
             </Box>
-        </Box>
+        </Paper>
     );
 }
-
-const DRAWER_WIDTH = 240;

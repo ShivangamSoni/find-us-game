@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Route, Routes } from "react-router";
+import { Route, Routes, useMatch } from "react-router";
 
 // Firebase
 import { db, storage } from "./firebase";
@@ -18,6 +18,8 @@ import { setGameBoards } from "./REDUX/gameSlice";
 import { generateImageKitURL } from "./utils/ImageKit";
 
 import { SnackbarProvider } from "notistack";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
@@ -30,6 +32,10 @@ import LeaderBoard from "./pages/LeaderBoard/LeaderBoard";
 export default function App() {
     const dispatch = useAppDispatch();
     const { user } = useAuthCtx();
+
+    const gamePathMatch = useMatch({ path: "/game/:boardId" });
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     // Due to Security Rules Auth is needed for Firestore Access
     useEffect(() => {
@@ -76,22 +82,35 @@ export default function App() {
         })();
     }, [user, dispatch]);
 
+    const isGamePage = !!gamePathMatch;
+
     return (
         <SnackbarProvider
             maxSnack={3}
             autoHideDuration={5000}
             domRoot={document.getElementById("notification") as HTMLElement}
         >
-            <Container maxWidth="lg" sx={{ padding: { xs: 0 } }}>
-                <Header />
-                <Toolbar variant="dense" />
-                <Box component="main" sx={{ px: 2, py: 4 }}>
+            <Container
+                maxWidth={gamePathMatch ? false : "lg"}
+                sx={{ padding: { xs: 0 } }}
+            >
+                <Header isMobile={isMobile} isGamePage={isGamePage} />
+                {!isMobile && !isGamePage && <Toolbar />}
+                <Box
+                    component="main"
+                    sx={{
+                        px: gamePathMatch ? 0 : 2,
+                        py: gamePathMatch ? 0 : 4,
+                        pt: 2,
+                    }}
+                >
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/game/:boardId" element={<Game />} />
                         <Route path="/leader-board" element={<LeaderBoard />} />
                     </Routes>
                 </Box>
+                {(isMobile || isGamePage) && <Toolbar />}
             </Container>
         </SnackbarProvider>
     );
