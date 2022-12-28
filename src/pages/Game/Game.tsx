@@ -29,6 +29,10 @@ import GameHeader from "../../components/GameHeader/GameHeader";
 import ImageKitImg from "../../components/ImageKitImg/ImageKitImg";
 import SelectionMenu from "../../components/SelectionMenu/SelectionMenu";
 import PlayerForm from "../../components/PlayerForm/PlayerForm";
+import SnackbarAction from "../../components/SnackbarAction/SnackbarAction";
+
+// 1 Hour Limit
+const MAX_TIME_LIMIT = 3600;
 
 export default function Game() {
     const navigate = useNavigate();
@@ -134,11 +138,30 @@ export default function Game() {
 
         const allFound = level.characters.every((char) => char.found);
 
-        if (!allFound) return;
+        if (rawSeconds < MAX_TIME_LIMIT && !allFound) return;
 
         pauseTimer();
+        if (!allFound) {
+            enqueueSnackbar(
+                <>
+                    Game Closed Automatically after 1 hour.
+                    <br />
+                    Either You are Too Slow or "Someone" forgot to close the
+                    Game.
+                </>,
+                {
+                    variant: "info",
+                    persist: true,
+                    action: (snackbarId) => (
+                        <SnackbarAction snackbarId={snackbarId} />
+                    ),
+                },
+            );
+            navigate("/");
+            return;
+        }
         setShowUsernameDialog(true);
-    }, [level, pauseTimer]);
+    }, [level, pauseTimer, rawSeconds, enqueueSnackbar, navigate]);
 
     const toggleMenuDialog = () => setShowMenuDialog((prev) => !prev);
 

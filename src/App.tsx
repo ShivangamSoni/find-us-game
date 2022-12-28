@@ -25,6 +25,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
 
 import Header from "./components/Header/Header";
+
 import Home from "./pages/Home/Home";
 import Game from "./pages/Game/Game";
 import LeaderBoard from "./pages/LeaderBoard/LeaderBoard";
@@ -86,9 +87,13 @@ export default function App() {
 
     return (
         <SnackbarProvider
-            maxSnack={3}
+            maxSnack={5}
             autoHideDuration={5000}
             domRoot={document.getElementById("notification") as HTMLElement}
+            anchorOrigin={{
+                horizontal: "left",
+                vertical: "top",
+            }}
         >
             <Container
                 maxWidth={isGamePage ? "xl" : "lg"}
