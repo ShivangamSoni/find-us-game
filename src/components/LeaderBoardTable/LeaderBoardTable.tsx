@@ -28,7 +28,7 @@ const COLUMNS: Columns[] = [
 
 const DateFormatter = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
-    timeStyle: "medium",
+    timeStyle: "short",
 });
 
 interface Props {

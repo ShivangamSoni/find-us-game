@@ -92,7 +92,7 @@ export default function LeaderBoard() {
                 display: "grid",
                 gap: 2,
                 gridTemplateRows: "auto 1fr",
-                maxHeight: "88vh",
+                maxHeight: "90vh",
             }}
         >
             <LevelSelector
