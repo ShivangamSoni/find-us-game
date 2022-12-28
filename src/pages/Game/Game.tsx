@@ -18,8 +18,8 @@ import { ref, getDownloadURL } from "firebase/storage";
 import { useSnackbar } from "notistack";
 
 import Box from "@mui/material/Box";
+import Popover from "@mui/material/Popover";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
 
 import { useTimer } from "../../hooks/useTimer";
 import { getCoordinates, verifyLocation } from "../../utils/game";
@@ -251,30 +251,25 @@ export default function Game() {
             </Box>
 
             {charactersToFind.length !== 0 && (
-                <Dialog
+                <Popover
                     open={showMenuDialog}
                     onClose={toggleMenuDialog}
-                    slots={{
-                        backdrop: () => null,
-                    }}
-                    sx={{
-                        "inset": "unset",
-                        "top": dialogPosition.y,
-                        "left": dialogPosition.x,
-                        "m": 1,
-
-                        "& > .MuiDialog-container, & .MuiPaper-root": {
-                            m: 0,
-                        },
-                    }}
                     disableEnforceFocus
+                    anchorPosition={{
+                        top: dialogPosition.y + 0.5,
+                        left: dialogPosition.x,
+                    }}
+                    anchorReference="anchorPosition"
+                    transformOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                    }}
                 >
-                    <DialogTitle>Which Character</DialogTitle>
                     <SelectionMenu
                         characters={charactersToFind}
                         onClick={handleMenuSelection}
                     />
-                </Dialog>
+                </Popover>
             )}
 
             {charactersToFind.length === 0 && (
