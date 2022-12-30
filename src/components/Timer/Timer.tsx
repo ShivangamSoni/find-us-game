@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { keyframes } from "@mui/material/styles";
+import { useTheme, keyframes } from "@mui/material/styles";
 
 const blink = keyframes`
     to {
@@ -18,10 +18,16 @@ interface Props {
 }
 
 export default function Timer({ minutes, seconds }: Props) {
+    const {
+        palette: { mode },
+    } = useTheme();
+
+    const dark = mode === "dark";
+
     return (
         <Box
             sx={{
-                backgroundColor: "pink",
+                backgroundColor: "primary.main",
                 borderRadius: "100vmax",
                 py: 0.5,
                 px: 2,
@@ -41,6 +47,7 @@ export default function Timer({ minutes, seconds }: Props) {
                     justifyContent: "center",
                     alignItems: "center",
                     gap: 0.5,
+                    color: dark ? "primary.light" : "",
                 }}
             >
                 <Typography component="span" variant="h6">

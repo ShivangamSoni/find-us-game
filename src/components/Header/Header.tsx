@@ -36,7 +36,7 @@ export default function Header({ isMobile, isGamePage }: Props) {
     const handleNavigation = (link: string) => navigate(link);
 
     return (
-        <Paper
+        <Box
             component="header"
             sx={{
                 position: "fixed",
@@ -47,10 +47,12 @@ export default function Header({ isMobile, isGamePage }: Props) {
                 display: "grid",
                 placeItems: "center stretch",
             }}
-            elevation={3}
         >
             <Box component="nav">
                 <BottomNavigation
+                    component={Paper}
+                    elevation={2}
+                    square
                     showLabels
                     value={pathname}
                     onChange={(e, link) => handleNavigation(link)}
@@ -62,10 +64,16 @@ export default function Header({ isMobile, isGamePage }: Props) {
                             label={label}
                             icon={icon}
                             value={link}
+                            sx={{
+                                "transition": "background 200ms ease-in-out",
+                                "&:hover": {
+                                    backgroundColor: "primary.light",
+                                },
+                            }}
                         />
                     ))}
                 </BottomNavigation>
             </Box>
-        </Paper>
+        </Box>
     );
 }

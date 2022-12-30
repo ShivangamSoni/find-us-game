@@ -26,7 +26,7 @@ export default function LevelSelector({
     height = "100%",
 }: Props) {
     return (
-        <Paper variant="elevation" sx={{ p: 1 }}>
+        <Paper variant="elevation" elevation={5} sx={{ p: 1 }}>
             <ImageList
                 variant="standard"
                 gap={8}
@@ -64,8 +64,16 @@ export default function LevelSelector({
                                 <IconButton
                                     title={`${actionTitleStart}: ${title}`}
                                     size="small"
-                                    color="warning"
-                                    sx={{ backgroundColor: "white", mr: 1 }}
+                                    sx={{
+                                        "mr": 1,
+                                        "backgroundColor": "primary.main",
+                                        "color": "primary.contrastText",
+                                        "boxShadow": 3,
+
+                                        "&:hover": {
+                                            backgroundColor: "primary.light",
+                                        },
+                                    }}
                                     onClick={() => onSelect(id as string)}
                                 >
                                     <ActionIcon />

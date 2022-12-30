@@ -49,7 +49,9 @@ export default function LeaderBoardTable({
 
     return (
         <Paper
+            elevation={5}
             sx={{
+                p: 1,
                 height: "100%",
                 overflow: "hidden",
             }}
@@ -57,6 +59,7 @@ export default function LeaderBoardTable({
             {leaderBoardData.length === 0 ? (
                 <Alert
                     severity="info"
+                    variant="outlined"
                     action={
                         <Button color="info" onClick={onPlayGame}>
                             {playLevelText}
@@ -70,6 +73,7 @@ export default function LeaderBoardTable({
                 <>
                     <Alert
                         severity="success"
+                        variant="outlined"
                         action={
                             <Button color="success" onClick={onPlayGame}>
                                 {playLevelText}
@@ -81,7 +85,7 @@ export default function LeaderBoardTable({
                             Try if you can get a better Time.
                         </AlertTitle>
                     </Alert>
-                    <TableContainer sx={{ maxHeight: "90%" }}>
+                    <TableContainer sx={{ mt: 1, maxHeight: "90%" }}>
                         <Table stickyHeader size={match ? "small" : "medium"}>
                             <Typography
                                 component="caption"
@@ -89,9 +93,7 @@ export default function LeaderBoardTable({
                                     position: "sticky",
                                     bottom: 0,
                                     zIndex: 2,
-                                    backgroundColor: "#fff",
-                                    borderTop:
-                                        "1px solid rgba(224, 224, 224, 1)",
+                                    backgroundColor: "background.paper",
                                 }}
                             >
                                 <Typography variant="h6">
@@ -99,6 +101,7 @@ export default function LeaderBoardTable({
                                     Global Leader Board
                                 </Typography>
                             </Typography>
+
                             <TableHead>
                                 <TableRow>
                                     {COLUMNS.map(({ id, align, label }) => (

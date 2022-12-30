@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Route, Routes, useMatch } from "react-router";
 
 // Firebase
@@ -12,14 +12,23 @@ import { auth } from "./firebase";
 import { useAuthCtx } from "./Context/AuthContext";
 
 // Redux
-import { useAppDispatch } from "./hooks/redux";
+import { useAppDispatch, useAppSelector } from "./hooks/redux";
 import { setGameBoards } from "./REDUX/gameSlice";
 
 import { generateImageKitURL } from "./utils/ImageKit";
 
 import { SnackbarProvider } from "notistack";
-import { useTheme } from "@mui/material/styles";
+
+// Theme
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { getThemeTokens } from "./utils/getThemeTokens";
+import { changeThemeMode } from "./REDUX/themeSlice";
+import ThemeChanger from "./components/ThemeChanger/ThemeChanger";
+import { COLORS } from "./Theme/colors";
+
+import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
@@ -34,9 +43,20 @@ export default function App() {
     const dispatch = useAppDispatch();
     const { user } = useAuthCtx();
 
+    const { mode, color } = useAppSelector((state) => state.theme);
+    const devicePreference = useMediaQuery("(prefers-color-scheme: dark)");
+
     const gamePathMatch = useMatch({ path: "/game/:boardId" });
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const { breakpoints } = useTheme();
+    const isMobile = useMediaQuery(breakpoints.down("sm"));
+
+    // Auto Theme Selection
+    useEffect(() => {
+        // No need for preference if User Selection already exists
+        if (!localStorage.getItem("theme")) {
+            dispatch(changeThemeMode(devicePreference ? "dark" : "light"));
+        }
+    }, [devicePreference, dispatch]);
 
     // Due to Security Rules Auth is needed for Firestore Access
     useEffect(() => {
@@ -85,38 +105,58 @@ export default function App() {
 
     const isGamePage = !!gamePathMatch;
 
+    const theme = useMemo(
+        () => createTheme(getThemeTokens(mode, COLORS[color])),
+        [mode, color],
+    );
+
     return (
-        <SnackbarProvider
-            maxSnack={5}
-            autoHideDuration={5000}
-            domRoot={document.getElementById("notification") as HTMLElement}
-            anchorOrigin={{
-                horizontal: "left",
-                vertical: "top",
-            }}
-        >
-            <Container
-                maxWidth={isGamePage ? "xl" : "lg"}
-                sx={{ padding: { xs: 0 } }}
+        <ThemeProvider theme={theme}>
+            <SnackbarProvider
+                maxSnack={5}
+                autoHideDuration={5000}
+                domRoot={document.getElementById("notification") as HTMLElement}
+                anchorOrigin={{
+                    horizontal: "left",
+                    vertical: "top",
+                }}
             >
-                <Header isMobile={isMobile} isGamePage={isGamePage} />
-                {!isMobile && !isGamePage && <Toolbar variant="dense" />}
-                <Box
-                    component="main"
-                    sx={{
-                        px: isGamePage ? 0 : 1,
-                        pt: isGamePage ? 0 : 3,
-                        pb: isGamePage ? 0 : 2,
-                    }}
-                >
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/game/:boardId" element={<Game />} />
-                        <Route path="/leader-board" element={<LeaderBoard />} />
-                    </Routes>
-                </Box>
-                {(isMobile || isGamePage) && <Toolbar variant="dense" />}
-            </Container>
-        </SnackbarProvider>
+                <Paper variant="outlined" square sx={{ minHeight: "100vh" }}>
+                    <Container
+                        maxWidth={isGamePage ? "xl" : "lg"}
+                        sx={{ padding: { xs: 0 } }}
+                    >
+                        <Header isMobile={isMobile} isGamePage={isGamePage} />
+                        <ThemeChanger />
+                        {!isMobile && !isGamePage && (
+                            <Toolbar variant="dense" />
+                        )}
+                        <Box
+                            component="main"
+                            sx={{
+                                px: isGamePage ? 0 : 1,
+                                pt: isGamePage ? 0 : 3,
+                                pb: isGamePage ? 0 : 2,
+                            }}
+                        >
+                            <Routes>
+                                <Route path="/" element={<Home />} />
+                                <Route
+                                    path="/game/:boardId"
+                                    element={<Game />}
+                                />
+                                <Route
+                                    path="/leader-board"
+                                    element={<LeaderBoard />}
+                                />
+                            </Routes>
+                        </Box>
+                        {(isMobile || isGamePage) && (
+                            <Toolbar variant="dense" />
+                        )}
+                    </Container>
+                </Paper>
+            </SnackbarProvider>
+        </ThemeProvider>
     );
 }
