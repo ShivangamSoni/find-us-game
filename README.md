@@ -1,46 +1,40 @@
-# Getting Started with Create React App
+# Find Us Game
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a Game inspired by **Where's Waldo**. The user is presented with an Image & they are supposed to find the listed characters within the Image.
 
-## Available Scripts
+I've completed this project as part of <a href="https://www.theodinproject.com/">**TheOdinProject**</a>.
 
-In the project directory, you can run:
+<a href="https://find-us-game.web.app/">**Live Demo**</a>
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Tech Stack
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 1. Frontend
+- React
+- TypeScript
+- Redux (@redux/toolkit)
+- Firebase v9
+- React Router DOM v6
+- MUI v5
 
-### `npm test`
+### 2. Backend
+- Firebase Firestore DB
+- Firebase Cloud Storage
+- Firebase Anonymous Authentication
+- Firebase Hosting
+- ImageKit Image Delivery
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+## Project Details
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Frontend
+- UI is made using MUI Components. It's fully responsive & customizable.
+- Using the Customization User can toggle between Light & Dark modes as well as they can choose the Theme Color to their liking.
+- User is made aware to the results of their interactions using **<a href="https://mui.com/material-ui/react-snackbar/">Snackbar</a>** Notifications.
+- With the use of Header, Main, Lists & other Semantic elements the UI is made completely Accessible.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 2. Backend
+- I have used Firebase for backend, the Game Levels Data is stored in Firestore DB alongside the Character Details & Global Leaderboard.
+- The Images are stored in Firebase Cloud Storage & are delivered to the user using ImageKit Delivery System.
+- The users are Anonymously authenticated, to prevent unnecessary misuse of the Firebase API.
+- The Website itself is hosted using Firebase Hosting Service.
